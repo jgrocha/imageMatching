@@ -1,5 +1,4 @@
-#include "GeocodeMonuments.h"
-
+#include "MovieIdentifier.hpp"
 #include "Common/Log.h"
 
 #include <iostream>
@@ -8,23 +7,23 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-GeocodeMonuments::GeocodeMonuments( Detector detID, DescriptorExtractor desID, DescriptorMatcher dmID)
+MovieIdentifier::MovieIdentifier( Detector detID, DescriptorExtractor desID, DescriptorMatcher dmID )
 {
 	_fH = new FeatureHandler( detID, desID, dmID );
 
 	_ratio = 0.85;
-	_nMatchesThresh = 18;
+	_nMatchesThresh = 20;
 	_showMatches = false;
 }
 
-void GeocodeMonuments::setMonument( std::string name, std::string imagePath )
+void MovieIdentifier::setMovie( std::string name, std::string imagePath )
 {
 	Image* img = processImage(imagePath);
 
 	_monuments.push_back( std::make_pair< std::string, Image* >( name, img) );
 }
 
-void GeocodeMonuments::findMonument( std::string imagePath )
+void MovieIdentifier::findMovie( std::string imagePath )
 {
 	Image* img = processImage(imagePath);
 
@@ -37,7 +36,7 @@ void GeocodeMonuments::findMonument( std::string imagePath )
 
 		if( matchThreshold >= _nMatchesThresh )
 		{
-			std::cout << "Found Monument for image '" << imagePath << "': " << it->first
+			std::cout << "Found movie for image '" << imagePath << "': " << it->first
 					<< ". With " << matchThreshold << " feature matches."<< std::endl;
 
 			if(_showMatches)
@@ -51,21 +50,21 @@ void GeocodeMonuments::findMonument( std::string imagePath )
 			found = true;
 		}
 	}
-	if( !found ) std::cout << "Was not able to find monument for image '" << imagePath << "'." << std::endl;
+	if( !found ) std::cout << "Was not able to find movie for image '" << imagePath << "'." << std::endl;
 }
 
-void GeocodeMonuments::testDir( std::string path )
+void MovieIdentifier::testDir( std::string path )
 {
 	getFileList(path);
 
 	std::set< std::string >::iterator it = _files.begin();
 	for( ; it != _files.end(); it++ )
 	{
-		findMonument( path+"/"+*it );
+		findMovie( path+"/"+*it );
 	}
 }
 
-Image* GeocodeMonuments::processImage( std::string path )
+Image* MovieIdentifier::processImage( std::string path )
 {
 	Image* img = new Image( path, 0.0f, 0.0f, 0.0f, 0.0f );
 
@@ -75,12 +74,12 @@ Image* GeocodeMonuments::processImage( std::string path )
 	return img;
 }
 
-void GeocodeMonuments::setShowMatches(bool value)
+void MovieIdentifier::setShowMatches(bool value)
 {
 	_showMatches = value;
 }
 
-void GeocodeMonuments::printFileNames()
+void MovieIdentifier::printFileNames()
 {
 	for( std::set< std::string >::iterator it = _files.begin(); it != _files.end(); it++ )
 	{
@@ -88,7 +87,7 @@ void GeocodeMonuments::printFileNames()
 	}
 }
 
-void GeocodeMonuments::getFileList( std::string path )
+void MovieIdentifier::getFileList( std::string path )
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -109,4 +108,5 @@ void GeocodeMonuments::getFileList( std::string path )
 	}
 }
 
-GeocodeMonuments::~GeocodeMonuments() {}
+MovieIdentifier::~MovieIdentifier(){}
+
